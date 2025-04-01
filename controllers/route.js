@@ -18,23 +18,10 @@ const getRouteModel = () => {
     const db = mongodb.getDatabase();
     return db.models[COLLECTION_NAME] || db.model(COLLECTION_NAME, routeSchema, COLLECTION_NAME);
 };
-
+ 
 const getAllRoutes = async (req, res) => {
     try {
         const Route = getRouteModel();
-
-        // Debug information
-        console.log('Collection name:', Route.collection.name);
-        console.log('Collection namespace:', Route.collection.namespace);
-
-        // Count documents in collection
-        const count = await Route.collection.countDocuments();
-        console.log('Number of documents in collection:', count);
-
-        // Get a sample document
-        const sampleDoc = await Route.collection.findOne();
-        console.log('Sample document:', sampleDoc);
-
         const results = await Route.find().exec();
 
         res.setHeader('Content-Type', 'application/json');
