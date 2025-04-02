@@ -2,17 +2,18 @@ const mongodb = require('../data/database');
 const { ObjectId } = require('mongodb'); // Add this for ObjectId
 
 const stopTimeSchema = {
-    TRIP_ID: String,
-    ARRIVAL_TIME: String,
-    DEPARTURE_TIME: String,
-    STOP_ID: String,
-    STOP_SEQUENCE: Number,
-    PICKUP_TYPE: Number,
-    DROP_OFF_TYPE: Number,
-    DISTANCE_TRAVELED: Number,
-    CREATE_DT_UTC: String,
-    MOD_DT_UTC: String,
-    GLOBALID: String
+    trip_id: {
+        type: Number,
+    },
+    departure_time: {
+        type: String,
+    },
+    stop_id: {
+        type: Number,
+    },
+    stop_sequence: {
+        type: Number,
+    }
 };
 const DATABASE_NAME = "Transit";
 const COLLECTION_NAME = "StopTime";
@@ -52,7 +53,7 @@ const getSingleStopTime = async (req, res) => {
 const getStopTimesByTripId = async (req, res) => {
     try {
         const StopTime = getStopTimeModel();
-        const stopTimes = await StopTime.find({ TRIP_ID: req.params.id }).exec();
+        const stopTimes = await StopTime.find({ trip_id: req.params.id }).exec();
 
         if (!stopTimes || stopTimes.length === 0) {
             return res.status(404).json({ message: 'No stop times found for this trip ID' });
@@ -68,7 +69,7 @@ const getStopTimesByTripId = async (req, res) => {
 const getStopTimesByStopId = async (req, res) => {
     try {
         const StopTime = getStopTimeModel();
-        const stopTimes = await StopTime.find({ STOP_ID: req.params.id }).exec();
+        const stopTimes = await StopTime.find({ stop_id: req.params.id }).exec();
 
         if (!stopTimes || stopTimes.length === 0) {
             return res.status(404).json({ message: 'No stop times found for this stop ID' });
