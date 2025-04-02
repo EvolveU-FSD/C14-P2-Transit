@@ -48,61 +48,11 @@ const getSingleStopTime = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
-const createStopTime = async (req, res) => {
-    try {
-        const StopTime = getStopTimeModel();
-        const newStopTime = new StopTime(req.body);
-        await newStopTime.save();
 
-        res.setHeader('Content-Type', 'application/json');
-        res.status(201).json(newStopTime);
-    } catch (err) {
-        console.error('Error creating stop time:', err);
-        res.status(500).json({ message: err.message });
-    }
-};
-
-const updateStopTime = async (req, res) => {
-    try {
-        const StopTime = getStopTimeModel();
-        const stopTime = await StopTime.findById(req.params.id).exec();
-
-        if (!stopTime) {
-            return res.status(404).json({ message: 'Stop time not found' });
-        }
-
-        Object.assign(stopTime, req.body);
-        await stopTime.save();
-
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(stopTime);
-    } catch (err) {
-        console.error('Error updating stop time:', err);
-        res.status(500).json({ message: err.message });
-    }
-}
-const deleteStopTime = async (req, res) => {
-    try {
-        const StopTime = getStopTimeModel();
-        const stopTime = await StopTime.findById(req.params.id).exec();
-
-        if (!stopTime) {
-            return res.status(404).json({ message: 'Stop time not found' });
-        }
-
-        await stopTime.remove();
-
-        res.setHeader('Content-Type', 'application/json');
-        res.status(204).json();
-    } catch (err) {
-        console.error('Error deleting stop time:', err);
-        res.status(500).json({ message: err.message });
-    }
-};
 const getStopTimesByTripId = async (req, res) => {
     try {
         const StopTime = getStopTimeModel();
-        const stopTimes = await StopTime.find({ TRIP_ID: req.params.tripId }).exec();
+        const stopTimes = await StopTime.find({ TRIP_ID: req.params.id }).exec();
 
         if (!stopTimes || stopTimes.length === 0) {
             return res.status(404).json({ message: 'No stop times found for this trip ID' });
@@ -118,7 +68,7 @@ const getStopTimesByTripId = async (req, res) => {
 const getStopTimesByStopId = async (req, res) => {
     try {
         const StopTime = getStopTimeModel();
-        const stopTimes = await StopTime.find({ STOP_ID: req.params.stopId }).exec();
+        const stopTimes = await StopTime.find({ STOP_ID: req.params.id }).exec();
 
         if (!stopTimes || stopTimes.length === 0) {
             return res.status(404).json({ message: 'No stop times found for this stop ID' });
@@ -134,9 +84,6 @@ const getStopTimesByStopId = async (req, res) => {
 module.exports = {
     getAllStopTimes,
     getSingleStopTime,
-    createStopTime,
-    updateStopTime,
-    deleteStopTime,
     getStopTimesByTripId,
     getStopTimesByStopId
 }
