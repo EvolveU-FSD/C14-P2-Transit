@@ -2,13 +2,13 @@ const mongodb = require ('../data/database');
 const {ObjectId} = require ('mongodb')
 
 const tripSchema = {
-    ROUTE_CATEGORY: String,
-    ROUTE_SHORT_NAME: String,
-    ROUTE_LONG_NAME: String, 
-    CREATE_DT_UTC: String, 
-    MOD_DT_UTC: String,
-    GLOBALID: String, 
-    MULTILINESTRING:String, 
+    route_id:String,
+    service_id:String,
+    trip_id:Number,
+    trip_headsign:String,
+    direction_id:Number,
+    block_id:Number,
+    shape_id:Number,
 };
 
 const DATABASE_NAME = "Transit";
