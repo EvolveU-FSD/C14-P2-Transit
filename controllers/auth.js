@@ -90,6 +90,7 @@ const login = async (req, res) => {
             domain: 'localhost'
         });
 
+
         res.status(200).json({
             accessToken,
             idToken,
@@ -103,6 +104,37 @@ const login = async (req, res) => {
         });
     }
 };
+
+const logout = async (req, res) => {
+    try {
+        const refreshToken = req.cookies?.refreshToken;
+
+        if (refreshToken) {
+            // Find user with this refresh token and remove it
+            const User = getUserModel();
+            await User.updateOne(
+                { refreshToken: refreshToken },
+                { $set: { refreshToken: null } }
+            );
+
+            // Clear the refresh token cookie
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                domain: 'localhost'
+            });
+        }
+
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (err) {
+        console.error('Logout error:', err);
+        res.status(500).json({
+            message: "An error occurred during logout"
+        });
+    }
+};
+
 
 const refresh = async (req, res) => {
     try {
@@ -330,6 +362,7 @@ const verifySocialToken = async (req, res) => {
 
 module.exports = {
     login,
+    logout,
     register,
     refresh
 };
