@@ -1,4 +1,5 @@
-import { getRouteArchiveModel } from './routeArchive';
+
+const tripController = require('../controllers/trip');
 const routeArchiveController = require('../controllers/routeArchive');
 const mongodb = require('../data/database');
 const { ObjectId } = require('mongodb'); // Add this for ObjectId
@@ -88,13 +89,15 @@ const getStopTimesByStopId = async (req, res) => {
 const getStopTimesByStopIdAndRouteId = async (req, res) => {
     try {
 
+        const Trip = tripController.getTripModel();
         const RouteArchive = routeArchiveController.getRouteArchiveModel();
-        const StopTime = getStopTimeModel();
-        const route = await RouteArchive.find({ route_id: req.params.route_id }).exec();
-        console.log(JSON.stringify(route));
-
-        const stopTimes = await StopTime.find({ stop_id: req.params.stop_id, route_id: req.params.route_id }).exec();
-
+        const route = await RouteArchive.findOne({ route_short_name: req.params.route_id }).exec();
+        
+        // stopTimes contains all stop times related to this bus route
+        // next find which of these stop times are related to the stop id
+        const stopTimes = await Trip.find({ route_id: route.route_id }).exec();
+       
+        
         if (!stopTimes || stopTimes.length === 0) {
             return res.status(404).json({ message: 'No stop times found for this stop ID' });
         }
