@@ -88,24 +88,41 @@ const getStopTimesByStopId = async (req, res) => {
 
 const getStopTimesByStopIdAndRouteId = async (req, res) => {
     try {
-
         const Trip = tripController.getTripModel();
         const RouteArchive = routeArchiveController.getRouteArchiveModel();
+        const StopTime = getStopTimeModel();
+
+        // Find the route by route_short_name
         const route = await RouteArchive.findOne({ route_short_name: req.params.route_id }).exec();
-        
-        // stopTimes contains all stop times related to this bus route
-        // next find which of these stop times are related to the stop id
-        const stopTimes = await Trip.find({ route_id: route.route_id }).exec();
-       
-        
-        if (!stopTimes || stopTimes.length === 0) {
-            return res.status(404).json({ message: 'No stop times found for this stop ID' });
+        if (!route) {
+            return res.status(404).json({ message: 'Route not found' });
+        }
+
+        // Find all trips for the given route_id
+        const trips = await Trip.find({ route_id: route.route_id }).exec();
+        if (!trips || trips.length === 0) {
+            return res.status(404).json({ message: 'No trips found for this route ID' });
+        }
+
+        // Fetch stop times for all trips and filter by stop_id
+        const stopTimes = await Promise.all(
+            trips.map(async (trip) => {
+                const stopTimesForATrip = await StopTime.find({ trip_id: trip.trip_id }).exec();
+                return stopTimesForATrip.filter(stopTime => stopTime.stop_id == req.params.stop_id);
+            })
+        );
+
+        // Flatten the array of arrays and filter out empty results
+        const relevantStopTimes = stopTimes.flat().filter(stopTime => stopTime);
+
+        if (relevantStopTimes.length === 0) {
+            return res.status(404).json({ message: 'No stop times found for this stop ID and route ID' });
         }
 
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(stopTimes);
+        res.status(200).json(relevantStopTimes);
     } catch (err) {
-        console.error('Error fetching stop times by stop ID:', err);
+        console.error('Error fetching stop times by stop ID and route ID:', err);
         res.status(500).json({ message: err.message });
     }
 };
