@@ -1,3 +1,5 @@
+import { getRouteArchiveModel } from './routeArchive';
+const routeArchiveController = require('../controllers/routeArchive');
 const mongodb = require('../data/database');
 const { ObjectId } = require('mongodb'); // Add this for ObjectId
 
@@ -82,9 +84,34 @@ const getStopTimesByStopId = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+const getStopTimesByStopIdAndRouteId = async (req, res) => {
+    try {
+
+        const RouteArchive = routeArchiveController.getRouteArchiveModel();
+        const StopTime = getStopTimeModel();
+        const route = await RouteArchive.find({ route_id: req.params.route_id }).exec();
+        console.log(JSON.stringify(route));
+
+        const stopTimes = await StopTime.find({ stop_id: req.params.stop_id, route_id: req.params.route_id }).exec();
+
+        if (!stopTimes || stopTimes.length === 0) {
+            return res.status(404).json({ message: 'No stop times found for this stop ID' });
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json(stopTimes);
+    } catch (err) {
+        console.error('Error fetching stop times by stop ID:', err);
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
 module.exports = {
     getAllStopTimes,
     getSingleStopTime,
     getStopTimesByTripId,
-    getStopTimesByStopId
+    getStopTimesByStopId,
+    getStopTimesByStopIdAndRouteId
 }
