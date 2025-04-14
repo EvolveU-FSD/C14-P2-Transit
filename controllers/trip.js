@@ -16,7 +16,7 @@ const COLLECTION_NAME = "Trip";
 
 const getTripModel = () => {
     const db = mongodb.getDatabase();
-    return db.modles[COLLECTION_NAME] || db.model(COLLECTION_NAME, tripSchema, COLLECTION_NAME);
+    return db.models[COLLECTION_NAME] || db.model(COLLECTION_NAME, tripSchema, COLLECTION_NAME);
     
 };
 
@@ -52,4 +52,5 @@ const getSingleTrip = async (req, res) => {
 module.exports = {
     getAllTrips,
     getSingleTrip,
+    getTripModel
 };

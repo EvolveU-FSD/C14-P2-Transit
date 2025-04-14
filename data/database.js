@@ -23,7 +23,6 @@ const initDb = async () => {
 
         // Add these debug logs
         console.log('Connected to database:', _db.name);
-        console.log('Available collections:', await _db.db.listCollections().toArray());
 
         console.log('Database initialized');
     } catch (err) {
