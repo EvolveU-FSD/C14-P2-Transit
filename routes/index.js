@@ -4,7 +4,8 @@ router.use('/route', require('./route'));
 router.use('/stop', require('./stop'));
 router.use('/stoptime', require('./stopTime'));
 router.use('/auth', require('./auth'));
-router.use('/routearchive', require('./routeArchive'));
+router.use('/routearchive', require('./routeArchive')); 
+router.use('/subscription', require('./subscription')); 
 // router.use('/routeArchive', require('./routeArchive'));
 // router.use('/trip', require('./trip'));
 
